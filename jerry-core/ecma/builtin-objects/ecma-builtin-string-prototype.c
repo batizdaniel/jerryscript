@@ -61,6 +61,7 @@ enum
 
   ECMA_STRING_PROTOTYPE_CONCAT,
   ECMA_STRING_PROTOTYPE_SLICE,
+  ECMA_STRING_PROTOTYPE_AT,
 
   ECMA_STRING_PROTOTYPE_LOCALE_COMPARE,
 
@@ -921,6 +922,53 @@ ecma_builtin_string_prototype_object_slice (ecma_string_t *get_string_val, /**< 
 } /* ecma_builtin_string_prototype_object_slice */
 
 /**
+ * The String.prototype object's 'at' routine
+ *
+ * See also:
+ *          ECMA-262 Stage 3 Draft
+ *
+ * @return ecma value
+ *         Returned value must be freed with ecma_free_value.
+ */
+static ecma_value_t
+ecma_builtin_string_prototype_object_at (const ecma_value_t index, /**< index argument */
+                                         ecma_string_t *string_val) /**< this argument */
+{
+
+  const lit_utf8_size_t len = ecma_string_get_length (string_val);
+
+  ecma_number_t relativeIndex, k;
+
+  ecma_value_t index_to_integer = ecma_op_to_integer (index, &relativeIndex);
+
+  if (ECMA_IS_VALUE_ERROR (index_to_integer))
+  {
+    return ECMA_VALUE_ERROR;
+  }
+
+  /* 5. 6. */
+  if (relativeIndex >= 0)
+  {
+    k = relativeIndex;
+  }
+  else
+  {
+    k = (ecma_number_t) len + relativeIndex;
+  }
+
+  /* 7. */
+  if (k < 0 || k >= (ecma_number_t) len)
+  {
+    return ECMA_VALUE_UNDEFINED;
+  }
+
+  /* 8. */
+  ecma_char_t character = ecma_string_get_char_at_pos (string_val, (lit_utf8_size_t) k);
+
+  return ecma_make_string_value (ecma_new_ecma_string_from_code_unit (character));
+} /* ecma_builtin_string_prototype_object_at */
+
+/**
  * The String.prototype object's 'split' routine
  *
  * See also:
@@ -1534,6 +1582,11 @@ ecma_builtin_string_prototype_dispatch_routine (uint8_t builtin_routine_id, /**<
     case ECMA_STRING_PROTOTYPE_SLICE:
     {
       ret_value = ecma_builtin_string_prototype_object_slice (string_p, arg1, arg2);
+      break;
+    }
+    case ECMA_STRING_PROTOTYPE_AT:
+    {
+      ret_value = ecma_builtin_string_prototype_object_at (arg1, string_p);
       break;
     }
     case ECMA_STRING_PROTOTYPE_LAST_INDEX_OF:

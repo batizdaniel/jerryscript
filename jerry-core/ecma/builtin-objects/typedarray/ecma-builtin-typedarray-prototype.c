@@ -65,6 +65,7 @@ enum
   ECMA_TYPEDARRAY_PROTOTYPE_ROUTINE_FIND_INDEX,
 
   ECMA_TYPEDARRAY_PROTOTYPE_ROUTINE_INDEX_OF,
+  ECMA_TYPEDARRAY_PROTOTYPE_ROUTINE_AT,
   ECMA_TYPEDARRAY_PROTOTYPE_ROUTINE_LAST_INDEX_OF,
   ECMA_TYPEDARRAY_PROTOTYPE_ROUTINE_INCLUDES,
   ECMA_TYPEDARRAY_PROTOTYPE_ROUTINE_FILL,
@@ -1298,6 +1299,48 @@ ecma_builtin_typedarray_prototype_find_helper (ecma_value_t this_arg, /**< this 
 } /* ecma_builtin_typedarray_prototype_find_helper */
 
 /**
+ * The %TypedArray%.prototype object's 'at' routine
+ *
+ * See also:
+ *          ECMA-262 Stage 3 Draft
+ *
+ * @return ecma value
+ *         Returned value must be freed with ecma_free_value.
+ */
+static ecma_value_t
+ecma_builtin_typedarray_prototype_at (const ecma_value_t index, /**< index argument */
+                                      ecma_typedarray_info_t *info_p) /**< object info */
+{
+  ecma_number_t relativeIndex, k;
+  ecma_value_t index_to_integer = ecma_op_to_integer (index, &relativeIndex);
+
+   /* 4. */
+  if (ECMA_IS_VALUE_ERROR (index_to_integer))
+  {
+    return ECMA_VALUE_ERROR;
+  }
+
+  /* 5. 6. */
+  if (relativeIndex >= 0)
+  {
+    k = relativeIndex;
+  }
+  else
+  {
+    k = (info_p->length) + relativeIndex;
+  }
+
+  /* 7. */
+  if (k < 0 || k >= (info_p->length))
+  {
+    return ECMA_VALUE_UNDEFINED;
+  }
+
+  /* 8. */
+  return ecma_get_typedarray_element (info_p, k);
+} /* ecma_builtin_typedarray_prototype_at */
+
+/**
  * The %TypedArray%.prototype object's 'indexOf' routine
  *
  * See also:
@@ -1854,6 +1897,10 @@ ecma_builtin_typedarray_prototype_dispatch_routine (uint8_t builtin_routine_id, 
                                                             arguments_list_p[0],
                                                             arguments_list_p[1],
                                                             is_find);
+    }
+    case ECMA_TYPEDARRAY_PROTOTYPE_ROUTINE_AT:
+    {
+      return ecma_builtin_typedarray_prototype_at (arguments_list_p[0], &info);
     }
     case ECMA_TYPEDARRAY_PROTOTYPE_ROUTINE_INDEX_OF:
     {
