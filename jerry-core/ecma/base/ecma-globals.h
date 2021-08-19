@@ -1864,6 +1864,8 @@ typedef struct
 typedef struct
 {
   lit_utf8_size_t current_size; /**< size of the data in the buffer */
+  lit_utf8_size_t buffer_size; /**< buffer size */
+
 } ecma_stringbuilder_header_t;
 
 /**

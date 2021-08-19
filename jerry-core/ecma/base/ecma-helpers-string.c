@@ -3028,6 +3028,17 @@ ecma_stringbuilder_destroy (ecma_stringbuilder_t *builder_p) /**< string builder
 #endif /* JERRY_MEM_STATS */
 } /* ecma_stringbuilder_destroy */
 
+/**
+ *
+ */
+ void
+ ecma_stringbuilder_reserve (ecma_stringbuilder_t *builder_p, /**< string builder */
+                             const lit_utf8_size_t size) /**< minimum capacity */
+ {
+   JERRY_UNUSED_2 (builder_p, size);
+ } /* ecma_stringbuilder_reserve */
+
+
 #if JERRY_ESNEXT
 /**
  * AdvanceStringIndex operation

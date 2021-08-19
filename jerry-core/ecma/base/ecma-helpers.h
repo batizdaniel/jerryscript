@@ -414,6 +414,7 @@ void ecma_stringbuilder_append_char (ecma_stringbuilder_t *builder_p, const ecma
 void ecma_stringbuilder_append_byte (ecma_stringbuilder_t *builder_p, const lit_utf8_byte_t);
 ecma_string_t *ecma_stringbuilder_finalize (ecma_stringbuilder_t *builder_p);
 void ecma_stringbuilder_destroy (ecma_stringbuilder_t *builder_p);
+void ecma_stringbuilder_reserve (ecma_stringbuilder_t *builder_p, const lit_utf8_size_t size);
 
 /* ecma-helpers-number.c */
 ecma_number_t ecma_number_pack (bool sign, uint32_t biased_exp, uint64_t fraction);
